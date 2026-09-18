@@ -5,4 +5,4 @@ editor: nvim
 prompt: enabled
 pager: less -FR
 aliases:
-  co: pr checkout
+    co: pr checkout
