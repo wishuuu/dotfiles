@@ -1,0 +1,2 @@
+# Dane uwierzytelniające gh nigdy nie powinny trafiać do repo.
+config/gh/hosts.yml

@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Wybierz projekt przez fzf i utwórz/przywróć jego sesję Zellij.
+set -euo pipefail
+
+for tool in find sort fzf realpath sha256sum tr cut zellij; do
+  command -v "$tool" >/dev/null 2>&1 || {
+    printf 'sese: brak wymaganego narzędzia: %s\n' "$tool" >&2
+    exit 1
+  }
+done
+
+roots=("$HOME")
+for root in "$HOME/personal" "$HOME/work"; do
+  [[ ! -d $root ]] || roots+=("$root")
+done
+
+# NUL zamiast nowych linii obsługuje także nietypowe nazwy katalogów.
+# -L uwzględnia dowiązania do katalogów; maxdepth zapobiega rekurencji.
+# Esc / Ctrl+C / brak wyboru: zakończ bez tworzenia sesji.
+if ! IFS= read -r -d '' selected < <(
+  find -L "${roots[@]}" -mindepth 1 -maxdepth 1 -type d -print0 |
+    sort -zu |
+    fzf --read0 --print0 --no-multi --prompt='Projekt > ' \
+      --height=70% --layout=reverse --border
+); then
+  exit 0
+fi
+
+# Dowiązania do tego samego projektu prowadzą do tej samej sesji.
+IFS= read -r -d '' directory < <(realpath -e -z -- "$selected")
+[[ -d $directory ]] || { printf 'sese: katalog już nie istnieje\n' >&2; exit 1; }
+slug=$(printf '%s' "${directory##*/}" | LC_ALL=C tr -cs 'A-Za-z0-9_-' '-' | cut -c1-32)
+hash=$(printf '%s' "$directory" | sha256sum)
+session="sese-${slug}-${hash:0:16}"
+
+if [[ -n ${ZELLIJ:-} ]]; then
+  [[ ${ZELLIJ_SESSION_NAME:-} != "$session" ]] || exit 0
+  # switch-session tworzy brakującą sesję i ustawia jej katalog startowy.
+  exec zellij action switch-session --cwd "$directory" "$session"
+fi
+
+cd -- "$directory"
+# Attach --create wybiera istniejącą sesję lub tworzy nową w bieżącym katalogu.
+exec zellij attach --create "$session"

@@ -1,0 +1,8 @@
+# Tylko preferencje. hosts.yml z danymi logowania pozostaje poza repo.
+version: "1"
+git_protocol: https
+editor: nvim
+prompt: enabled
+pager: less -FR
+aliases:
+  co: pr checkout

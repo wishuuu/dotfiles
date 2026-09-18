@@ -1,5 +1,8 @@
 if status is-interactive
     set -g fish_greeting
+    if command -q fzf
+        fzf --fish | source
+    end
     if command -q direnv
         direnv hook fish | source
     end
