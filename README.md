@@ -20,12 +20,18 @@ Fish: otwórz nowy terminal. Ghostty: `Ctrl+Shift+,` przeładowuje konfigurację
 
 Na innych dystrybucjach zainstaluj odpowiadające programy. Ścieżka do agenta
 Polkit w `hyprland.conf` jest specyficzna dla NixOS — dostosuj ją do dystrybucji.
-Terminal domyślnie używa powłoki logowania użytkownika; ustaw Fish przez `chsh`.
+Ghostty uruchamia `zellij attach --create main`, a Zellij używa Fish.
+Na innych dystrybucjach zainstaluj oba programy i zadbaj o ich dostępność w PATH.
 
-Zellij (`config/zellij/config.kdl`) startuje w trybie zablokowanych skrótów:
-`Ctrl+g` odblokowuje/zablokowuje sterowanie, pasek na dole pokazuje akcje.
-Uruchamiaj ręcznie przez `zellij -s dev`, wracaj przez `zellij attach dev`.
-Nie odtwarza sesji po restarcie systemu (wyłączona serializacja).
+Zellij (`config/zellij/config.kdl`) startuje w trybie zablokowanych skrótów.
+`Ctrl+a` otwiera tryb Tab: `1…9` i strzałki wybierają tab, `n` tworzy nowy,
+a kolejne `Ctrl+a` wraca do ostatnio aktywnego taba. Te akcje ponownie blokują
+skróty; `Esc` anuluje prefix i też blokuje. `r` zmienia nazwę taba, Enter
+zatwierdza i blokuje, Esc cofa zmianę i blokuje.
+Przejścia do pozostałych trybów pozostają domyślne, np. `Ctrl+p` -> Pane.
+Ich bindy pozostają bez zmian; `Ctrl+g` pozwala wrócić do Locked.
+Ghostty automatycznie tworzy/przywraca wspólną sesję `main`; do projektów użyj `sese`.
+Zellij nie odtwarza sesji po restarcie systemu (wyłączona serializacja).
 
 GitHub CLI: dowiązujemy tylko `config/gh/config.yml`, nigdy cały katalog `gh`.
 Zaloguj się przez `gh auth login --web`, potem `gh auth setup-git`.
