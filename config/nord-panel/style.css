@@ -1,0 +1,20 @@
+/* Nord / Frost — lokalne style, bez zmieniania innych aplikacji GTK. */
+window, dialog { background: #2e3440; color: #eceff4; font-family: "JetBrainsMono Nerd Font"; font-size: 12px; }
+headerbar { background: #272e3a; color: #88c0d0; border-bottom: 1px solid #434c5e; box-shadow: none; min-height: 34px; }
+headerbar .subtitle { color: #81a1c1; font-size: 10px; }
+button { background: #3b4252; color: #e5e9f0; border: 1px solid #434c5e; border-radius: 5px; padding: 7px 8px; min-height: 0; box-shadow: none; text-shadow: none; transition: 120ms ease; }
+button:hover { background: #434c5e; border-color: #88c0d0; color: #8fbcbb; }
+button:active, button:checked { background: #5e81ac; color: #eceff4; }
+button:focus { border-color: #88c0d0; }
+button.power { padding: 14px; }
+.clock { font-size: 24px; font-weight: bold; color: #88c0d0; }
+.section { color: #81a1c1; font-size: 10px; font-weight: bold; letter-spacing: 2px; margin-top: 4px; }
+.status { color: #aab8cc; font-size: 11px; }
+.track { color: #8fbcbb; }
+scale { padding: 5px 0; }
+scale trough { background: #434c5e; min-height: 5px; border: none; border-radius: 3px; }
+scale highlight { background: #81a1c1; border-radius: 3px; }
+scale slider { background: #88c0d0; border: none; box-shadow: none; min-width: 12px; min-height: 12px; }
+scale value { color: #d8dee9; font-size: 11px; }
+scrollbar { background: transparent; }
+scrollbar slider { background: #4c566a; min-width: 4px; border-radius: 3px; }

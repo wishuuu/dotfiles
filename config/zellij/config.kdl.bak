@@ -1,0 +1,60 @@
+// Prefix jak w tmux: Ctrl+a -> Tab, akcja -> Locked.
+// Ctrl+a Ctrl+a wraca do ostatnio aktywnego taba (nie sąsiedniego).
+default_mode "locked"
+
+keybinds {
+    locked {
+        unbind "Ctrl g"
+        bind "Ctrl a" { SwitchToMode "Tab"; }
+    }
+    normal {
+        // Pozostałe tryby zachowują domyślne bindy, także powrót do Normal.
+        bind "Ctrl a" { SwitchToMode "Tab"; }
+    }
+    tab {
+        bind "Ctrl a" "Tab" { ToggleTab; SwitchToMode "Locked"; }
+        bind "Esc" "Enter" "Ctrl t" { SwitchToMode "Locked"; }
+        bind "h" "Left" "Up" "k" { GoToPreviousTab; SwitchToMode "Locked"; }
+        bind "l" "Right" "Down" "j" { GoToNextTab; SwitchToMode "Locked"; }
+        bind "n" "c" { NewTab; SwitchToMode "Locked"; }
+        bind "p" { GoToPreviousTab; SwitchToMode "Locked"; }
+        bind "%" { NewPane "Right"; SwitchToMode "Locked"; }
+        bind "\"" { NewPane "Down"; SwitchToMode "Locked"; }
+        bind "d" { Detach; }
+        bind "x" { CloseTab; SwitchToMode "Locked"; }
+        bind "s" { ToggleActiveSyncTab; SwitchToMode "Locked"; }
+        bind "b" { BreakPane; SwitchToMode "Locked"; }
+        bind "]" { BreakPaneRight; SwitchToMode "Locked"; }
+        bind "[" { BreakPaneLeft; SwitchToMode "Locked"; }
+        bind "1" { GoToTab 1; SwitchToMode "Locked"; }
+        bind "2" { GoToTab 2; SwitchToMode "Locked"; }
+        bind "3" { GoToTab 3; SwitchToMode "Locked"; }
+        bind "4" { GoToTab 4; SwitchToMode "Locked"; }
+        bind "5" { GoToTab 5; SwitchToMode "Locked"; }
+        bind "6" { GoToTab 6; SwitchToMode "Locked"; }
+        bind "7" { GoToTab 7; SwitchToMode "Locked"; }
+        bind "8" { GoToTab 8; SwitchToMode "Locked"; }
+        bind "9" { GoToTab 9; SwitchToMode "Locked"; }
+        // Jawne przejścia z trybu prefix/Tab do pozostałych trybów.
+        bind "Ctrl p" { SwitchToMode "Pane"; }
+        bind "Ctrl n" { SwitchToMode "Resize"; }
+        bind "Ctrl h" { SwitchToMode "Move"; }
+        bind "Ctrl s" { SwitchToMode "Scroll"; }
+        bind "Ctrl o" { SwitchToMode "Session"; }
+        bind "Ctrl b" { SwitchToMode "Tmux"; }
+        bind "Ctrl g" { SwitchToMode "Locked"; }
+        bind "r" { SwitchToMode "RenameTab"; TabNameInput 0; }
+    }
+    renametab {
+        bind "Enter" "Ctrl c" { SwitchToMode "Locked"; }
+        bind "Esc" { UndoRenameTab; SwitchToMode "Locked"; }
+    }
+}
+default_shell "fish"
+theme "nord"
+mouse_mode true
+pane_frames true
+scroll_buffer_size 10000
+copy_on_select false
+// Nie zapisuj zawartości terminala na dysku do odtwarzania sesji.
+session_serialization false

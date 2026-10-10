@@ -1,8 +1,14 @@
 font-family = JetBrainsMono Nerd Font
 font-size = 11
-theme = Catppuccin Mocha
-window-padding-x = 8
-window-padding-y = 8
+theme = Nord
+window-padding-x = 5
+window-padding-y = 4
+window-decoration = none
+background-opacity = 1
+cursor-style = block
+cursor-style-blink = false
+mouse-hide-while-typing = true
+confirm-close-surface = false
 
-# Każde nowe okno/tab terminala tworzy lub przywraca wspólną sesję.
+# Wszystkie okna dołączają do wspólnej sesji; projekty wybierzesz przez sese.
 command = direct:zellij attach --create main

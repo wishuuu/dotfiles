@@ -1,0 +1,37 @@
+local function exec(key, command, options)
+    hl.bind(key, hl.dsp.exec_cmd(command), options or {})
+end
+exec("SUPER + Return", "ghostty")
+exec("SUPER + D", "fuzzel")
+hl.bind("SUPER + C", hl.dsp.window.close())
+exec("SUPER + E", "thunar")
+exec("SUPER + L", "loginctl lock-session")
+exec("SUPER + SPACE", "desktop-menu")
+exec("SUPER + SHIFT + E", "desktop-menu --power")
+-- Bez locked=true: menu nie pojawia się ponad blokadą ekranu.
+exec("XF86PowerOff", "desktop-menu --power")
+hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
+hl.bind("SUPER + V", hl.dsp.window.float({ action = "toggle" }))
+hl.bind("SUPER + J", hl.dsp.layout("togglesplit"))
+exec("Print", "grim -g \"$(slurp)\" - | wl-copy")
+exec("SUPER + Print", "grim - | wl-copy")
+for _, direction in ipairs({ "left", "right", "up", "down" }) do
+    hl.bind("SUPER + " .. direction, hl.dsp.focus({ direction = direction }))
+    hl.bind("SUPER + CTRL + " .. direction, hl.dsp.window.move({ direction = direction }))
+end
+for i = 1, 9 do
+    hl.bind("SUPER + " .. i, hl.dsp.focus({ workspace = i }))
+    hl.bind("SUPER + SHIFT + " .. i, hl.dsp.window.move({ workspace = i, follow = true }))
+    hl.bind("SUPER + ALT + " .. i, hl.dsp.window.move({ workspace = i, follow = false }))
+end
+hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
+hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
+exec("XF86AudioRaiseVolume", "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+", { locked = true, repeating = true })
+exec("XF86AudioLowerVolume", "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", { locked = true, repeating = true })
+exec("XF86AudioMute", "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", { locked = true })
+exec("XF86AudioMicMute", "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle", { locked = true })
+exec("XF86MonBrightnessUp", "brightnessctl -e4 -n2 set 5%+", { locked = true, repeating = true })
+exec("XF86MonBrightnessDown", "brightnessctl -e4 -n2 set 5%-", { locked = true, repeating = true })
+exec("XF86AudioPlay", "playerctl play-pause", { locked = true })
+exec("XF86AudioNext", "playerctl next", { locked = true })
+exec("XF86AudioPrev", "playerctl previous", { locked = true })

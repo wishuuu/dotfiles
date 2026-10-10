@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Jeden panel na sesję (Gtk.Application); drugi klik przywołuje istniejący.
+set -euo pipefail
+if ! command -v nord-panel >/dev/null; then
+    notify-send 'Panel Nord' 'Brak nord-panel. Przebuduj NixOS z modules/desktop.nix.' || true
+    exit 1
+fi
+exec nord-panel "$@"

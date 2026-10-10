@@ -5,7 +5,7 @@ root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 profile=${1:-cli}
 case "$profile" in
   cli) names=(fish zellij) ;;
-  desktop) names=(fish zellij ghostty hypr waybar fuzzel mako) ;;
+  desktop) names=(fish zellij ghostty hypr waybar fuzzel mako nord-panel) ;;
   *) echo 'Profil musi być cli lub desktop' >&2; exit 1 ;;
 esac
 [[ $EUID -ne 0 ]] || { echo 'Uruchom jako zwykły użytkownik, bez sudo.' >&2; exit 1; }

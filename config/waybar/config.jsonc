@@ -2,12 +2,52 @@
   "layer": "top",
   "position": "top",
   "height": 30,
-  "modules-left": ["hyprland/workspaces"],
+  "spacing": 3,
+  "modules-left": ["custom/control", "hyprland/workspaces", "hyprland/window"],
   "modules-center": ["clock"],
-  "modules-right": ["pulseaudio", "network", "battery", "tray"],
-  "clock": { "format": "{:%d.%m.%Y  %H:%M}" },
-  "pulseaudio": { "format": "VOL {volume}%", "format-muted": "MUTE", "on-click": "pavucontrol" },
-  "network": { "format-wifi": "{essid}", "format-ethernet": "LAN", "format-disconnected": "offline" },
-  "battery": { "format": "BAT {capacity}%", "states": { "warning": 25, "critical": 10 } },
-  "tray": { "spacing": 8 }
+  "modules-right": ["mpris", "idle_inhibitor", "pulseaudio", "backlight", "network", "bluetooth", "battery", "tray", "custom/power"],
+  "custom/control": { "format": "󰕮", "tooltip-format": "Centrum sterowania · Win+Space", "on-click": "desktop-menu" },
+  "hyprland/workspaces": {
+    "format": "{id}", "on-click": "activate", "sort-by-number": true,
+    "persistent-workspaces": { "*": [1, 2, 3, 4, 5, 6, 7, 8, 9] }
+  },
+  "hyprland/window": { "format": "{}", "max-length": 24, "separate-outputs": true },
+  "clock": {
+    "format": "{:%H:%M}", "format-alt": "{:%a, %d.%m  %H:%M}",
+    "tooltip-format": "<big>{:%A, %d %B %Y}</big>\n<tt><small>{calendar}</small></tt>",
+    "calendar": { "mode": "month", "weeks-pos": "left", "on-scroll": 1,
+      "format": { "today": "<span color='#88c0d0'><b>{}</b></span>" } }
+  },
+  "mpris": {
+    "format": "{status_icon} {title}", "format-paused": "{status_icon} {title}",
+    "status-icons": { "playing": "󰎈", "paused": "󰏤", "stopped": "󰓛" },
+    "max-length": 20, "tooltip-format": "{artist} — {title}\nKlik: graj/pauza · prawy: następny",
+    "on-click": "playerctl play-pause", "on-click-right": "playerctl next"
+  },
+  "idle_inhibitor": {
+    "format": "{icon}", "format-icons": { "activated": "󰅶", "deactivated": "󰾪" },
+    "tooltip-format-activated": "Czuwanie: automatyczna blokada wstrzymana",
+    "tooltip-format-deactivated": "Kliknij, aby wstrzymać automatyczną blokadę"
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}%", "format-muted": "󰝟",
+    "format-icons": { "default": ["󰕿", "󰖀", "󰕾"], "headphone": "󰋋" },
+    "scroll-step": 5, "max-volume": 100, "on-click": "pavucontrol",
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  },
+  "backlight": { "format": "󰃠 {percent}%", "on-scroll-up": "brightnessctl set +5%", "on-scroll-down": "brightnessctl set 5%-" },
+  "network": {
+    "format-wifi": "󰤨", "format-ethernet": "󰈀", "format-disconnected": "󰤭",
+    "tooltip-format-wifi": "{essid} · {signalStrength}%\n{ipaddr}",
+    "tooltip-format-ethernet": "{ifname} · {ipaddr}", "tooltip-format-disconnected": "Brak połączenia",
+    "on-click": "nm-connection-editor"
+  },
+  "bluetooth": { "format": "󰂯", "format-disabled": "󰂲", "format-connected": "󰂱", "tooltip-format": "{status}", "on-click": "blueman-manager" },
+  "battery": {
+    "format": "{icon} {capacity}%", "format-charging": "󰂄 {capacity}%", "format-plugged": "󰚥 {capacity}%",
+    "format-icons": ["󰁺", "󰁼", "󰁾", "󰂀", "󰁹"],
+    "states": { "warning": 25, "critical": 10 }, "tooltip-format": "{timeTo} · {power:.1f} W"
+  },
+  "tray": { "spacing": 7, "icon-size": 16 },
+  "custom/power": { "format": "󰐥", "tooltip-format": "Sesja i zasilanie", "on-click": "desktop-menu --power" }
 }
