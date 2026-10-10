@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import threading
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -22,11 +23,31 @@ def output(*args):
         return ""
 
 
+def read_status():
+    """Odczyty blokujące; bez dostępu do GTK, uruchamiane poza wątkiem UI."""
+    volume = output("wpctl", "get-volume", "@DEFAULT_AUDIO_SINK@")
+    brightness = (output("brightnessctl", "get"), output("brightnessctl", "max"))
+    track = output("playerctl", "metadata", "--format", "{{artist}} — {{title}}")
+    resources = ""
+    try:
+        mem = {}
+        for line in Path("/proc/meminfo").read_text().splitlines():
+            key, value = line.split(":", 1)
+            mem[key] = int(value.split()[0])
+        used = (mem["MemTotal"] - mem["MemAvailable"]) / 1048576
+        free = shutil.disk_usage(HOME).free / (1024 ** 3)
+        resources = f"RAM {used:.1f} / {mem['MemTotal'] / 1048576:.1f} GiB   •   Wolne {free:.0f} GiB   •   CPU load {os.getloadavg()[0]:.2f}"
+    except (OSError, KeyError, ValueError):
+        pass
+    return volume, brightness, track, resources
+
+
 class Panel(Gtk.Application):
     def __init__(self):
         super().__init__(application_id="pl.oskar.NordPanel", flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
         self.window = None
         self.refreshing = False
+        self.polling = None
         self.pending = {}
 
     def do_command_line(self, command_line):
@@ -229,9 +250,33 @@ class Panel(Gtk.Application):
         self.launch(args)
 
     def refresh(self):
+        if self.window is None:
+            return False
         self.clock.set_text(datetime.datetime.now().strftime("%H:%M   /   %d.%m.%Y"))
+        if self.polling is not None:
+            return True
+        window = self.window
+        self.polling = window
+
+        def collect():
+            try:
+                values = read_status()
+            except Exception:
+                # Awaria odczytu nie może zablokować kolejnych prób odświeżenia.
+                values = ("", ("", ""), "", "")
+            GLib.idle_add(self.apply_status, window, values)
+
+        threading.Thread(target=collect, name="nord-status", daemon=True).start()
+        return True
+
+    def apply_status(self, window, values):
+        # Wynik dla zamkniętego okna nie może trafić do nowego okna aplikacji.
+        if self.polling is window:
+            self.polling = None
+        if self.window is not window:
+            return False
+        volume, brightness, track, resources = values
         self.refreshing = True
-        volume = output("wpctl", "get-volume", "@DEFAULT_AUDIO_SINK@")
         try:
             if "volume" not in self.pending and not self.volume.has_focus():
                 self.volume.set_value(float(volume.split()[1]) * 100)
@@ -240,27 +285,17 @@ class Panel(Gtk.Application):
         except (ValueError, IndexError):
             self.volume.set_sensitive(False)
         try:
-            value = int(output("brightnessctl", "get")) / int(output("brightnessctl", "max")) * 100
+            value = int(brightness[0]) / int(brightness[1]) * 100
             if "brightness" not in self.pending and not self.brightness.has_focus():
                 self.brightness.set_value(value)
             self.brightness.set_sensitive(True)
         except (ValueError, ZeroDivisionError):
             self.brightness.set_sensitive(False)
         self.refreshing = False
-        track = output("playerctl", "metadata", "--format", "{{artist}} — {{title}}")
         self.track.set_text(track or "Cisza • brak aktywnego odtwarzacza")
         self.track.set_tooltip_text(track)
-        mem = {}
-        try:
-            for line in Path("/proc/meminfo").read_text().splitlines():
-                key, value = line.split(":", 1)
-                mem[key] = int(value.split()[0])
-            used = (mem["MemTotal"] - mem["MemAvailable"]) / 1048576
-            free = shutil.disk_usage(HOME).free / (1024 ** 3)
-            self.resources.set_text(f"RAM {used:.1f} / {mem['MemTotal'] / 1048576:.1f} GiB   •   Wolne {free:.0f} GiB   •   CPU load {os.getloadavg()[0]:.2f}")
-        except (OSError, KeyError, ValueError):
-            self.resources.set_text("")
-        return True
+        self.resources.set_text(resources)
+        return False
 
 
 if __name__ == "__main__":

@@ -2,10 +2,12 @@
 local home = os.getenv("HOME")
 local config = os.getenv("XDG_CONFIG_HOME") or (home .. "/.config")
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
+hl.env("XCURSOR_THEME", "Adwaita")
 hl.env("XCURSOR_SIZE", "24")
-hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("GTK_THEME", "Nordic")
 hl.config({
+    -- Jeden klasyczny motyw XCursor w kompozytorze i aplikacjach.
+    cursor = { enable_hyprcursor = false },
     input = { kb_layout = "pl", follow_mouse = 1,
         touchpad = { natural_scroll = true, tap_to_click = true } },
     general = { gaps_in = 3, gaps_out = 6, border_size = 2,
@@ -27,10 +29,13 @@ hl.on("hyprland.start", function()
     for _, command in ipairs({
         "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE",
         "waybar", "mako", "hypridle", "nm-applet --indicator",
-        "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1",
+        "nord-polkit-agent",
         "swaybg -i '" .. config .. "/hypr/wallpapers/nord.png' -m fill",
         "gsettings set org.gnome.desktop.interface gtk-theme Nordic",
         "gsettings set org.gnome.desktop.interface icon-theme Papirus-Dark",
+        "gsettings set org.gnome.desktop.interface cursor-theme Adwaita",
+        "gsettings set org.gnome.desktop.interface cursor-size 24",
+        "hyprctl setcursor Adwaita 24",
         "gsettings set org.gnome.desktop.interface color-scheme prefer-dark",
     }) do hl.exec_cmd(command) end
 end)
